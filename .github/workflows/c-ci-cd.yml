@@ -36,7 +36,7 @@ jobs:
       - name: 4. Build Docker image
         shell: pwsh
         run: |
-          docker build -t $env:IMAGE_NAME:latest .
+          docker build -t "${{ env.IMAGE_NAME }}:latest" .
 
       - name: 5. Run container test
         shell: pwsh
@@ -50,7 +50,7 @@ jobs:
       - name: 6. Push image to GHCR
         shell: pwsh
         run: |
-          docker push $env:IMAGE_NAME:latest
+         docker build -t "${{ env.IMAGE_NAME }}:latest" .
 
       - name: 7. Deploy with Docker Compose
         shell: pwsh
