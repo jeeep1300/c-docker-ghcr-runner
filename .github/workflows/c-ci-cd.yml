@@ -36,31 +36,25 @@ jobs:
       - name: 4. Build Docker image
         shell: powershell
         run: |
-          # PowerShell 변수 인식 문제를 피하기 위해 ${{ }} 문법을 직접 사용함
-          docker build -t "${{ env.IMAGE_NAME }}:latest" .
+          docker build -t $env:IMAGE_NAME:latest .
 
       - name: 5. Run container test
         shell: powershell
         run: |
-          # 기존 테스트 컨테이너 강제 삭제 (에러 방지)
           docker rm -f c-test-container 2>$null
-          # 빌드된 이미지 실행 및 결과 저장
-          docker run --name c-test-container "${{ env.IMAGE_NAME }}:latest" > output.txt
+          docker run --name c-test-container $env:IMAGE_NAME:latest > output.txt
           Get-Content output.txt
-          # 결과값 검증 (C 코드의 printf 출력과 일치해야 함)
           Select-String -Path output.txt -Pattern "sum = 30"
           docker rm -f c-test-container
 
       - name: 6. Push image to GHCR
         shell: powershell
         run: |
-          # 검증된 이미지를 레지스트리에 푸시
-          docker push "${{ env.IMAGE_NAME }}:latest"
+          docker push $env:IMAGE_NAME:latest
 
       - name: 7. Deploy with Docker Compose
         shell: powershell
         run: |
-          # 배포 환경 갱신
           docker compose down
           docker compose pull
           docker compose up -d
@@ -68,3 +62,4 @@ jobs:
       - name: 8. Verify running container
         shell: powershell
         run: docker ps
+
